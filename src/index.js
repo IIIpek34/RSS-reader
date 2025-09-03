@@ -5,18 +5,25 @@ const captureInputData = () => {
 
   const buttonClick = () => {
     const inputValue = inputField.value.trim()
+    const proxy = 'https://api.allorigins.win/get?url='
 
     if (!inputValue) {
-      outputDiv.textContent = 'Пожалуйста, введите текст!'
+      outputDiv.textContent = 'Пожалуйста, введите URL адрес!'
       outputDiv.style.color = 'red'
       return
     }
-
-    outputDiv.innerHTML = `
-            <strong>Вы ввели:</strong> ${inputValue}
-            <br><small>Длина текста: ${inputValue.length} символов</small>
-        `
-    outputDiv.style.color = 'green'
+    // https://lenta.ru/rss/news
+    fetch(`${proxy}${encodeURIComponent(inputValue)}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error, status = ${response.status}`)
+        }
+        return response.json()
+      })
+      .then((dataXML) => {
+        const objectDOM = new DOMParser().parseFromString(dataXML.contents, 'application/xml')
+        outputDiv.textContent = objectDOM
+      })
 
     inputField.value = ''
     inputField.focus()
