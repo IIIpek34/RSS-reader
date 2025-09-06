@@ -1,18 +1,10 @@
+import parseRSS from './parser.js'
+
 const decodeBase64 = (base64Content) => {
   const binary = atob(base64Content)
   const bytes = new Uint8Array(binary.length)
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
   return new TextDecoder('utf-8').decode(bytes)
-}
-
-const parseRSS = (xmlString) => {
-  const objectDOM = new DOMParser().parseFromString(xmlString, 'application/xml')
-  const allItems = objectDOM.querySelectorAll('item')
-  return Array.from(allItems).map((item) => {
-    const title = item.querySelector('title')?.textContent || 'Без заголовка'
-    const link = item.querySelector('link')?.textContent || '#'
-    return { title, link }
-  })
 }
 
 const renderNewsList = (newsArray, outputDiv) => {
