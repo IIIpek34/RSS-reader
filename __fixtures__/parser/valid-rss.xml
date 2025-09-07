@@ -1,0 +1,12 @@
+<rss>
+  <channel>
+    <item>
+      <title>Новость 1</title>
+      <link>https://example.com/news1</link>
+    </item>
+    <item>
+      <title>Новость 2</title>
+      <link>https://example.com/news2</link>
+    </item>
+  </channel>
+</rss>
