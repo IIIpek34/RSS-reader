@@ -1,4 +1,6 @@
 import parseRSS from './parser.js'
+import { addFeed, addPosts, setError, clearError, setLoading } from './stateHelpers.js'
+import { renderFeeds, renderPosts, renderError } from './render.js'
 
 const decodeBase64 = (base64Content) => {
   const binary = atob(base64Content)
@@ -7,58 +9,58 @@ const decodeBase64 = (base64Content) => {
   return new TextDecoder('utf-8').decode(bytes)
 }
 
-const renderNewsList = (newsArray, outputDiv) => {
-  outputDiv.innerHTML = ''
-  const ul = document.createElement('ul')
-  newsArray.forEach(({ title, link }) => {
-    const li = document.createElement('li')
-    const a = document.createElement('a')
-    a.href = link
-    a.textContent = title
-    a.target = '_blank'
-    li.appendChild(a)
-    ul.appendChild(li)
-  })
-  outputDiv.appendChild(ul)
-}
-
 const captureInputData = () => {
   const inputField = document.getElementById('userInput')
   const button = document.getElementById('submitButton')
+  const feedContainer = document.getElementById('feed-list')
+  const postContainer = document.getElementById('post-list')
   const outputDiv = document.getElementById('output')
   const proxy = 'https://api.allorigins.win/get?url='
 
   const buttonClick = () => {
-    const inputValue = inputField.value.trim()
-    if (!inputValue) {
-      outputDiv.textContent = 'Пожалуйста, введите URL адрес!'
-      outputDiv.style.color = 'red'
+    const url = inputField.value.trim()
+    if (!url) {
+      setError('Пожалуйста, введите URL адрес!')
+      renderError(outputDiv)
       return
     }
 
-    fetch(`${proxy}${encodeURIComponent(inputValue)}`)
-      .then((response) => {
-        if (!response.ok) throw new Error(`HTTP error, status = ${response.status}`)
-        return response.json()
+    clearError()
+    setLoading(true)
+    renderError(outputDiv)
+
+    fetch(`${proxy}${encodeURIComponent(url)}`)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP error, status = ${res.status}`)
+        return res.json()
       })
-      .then((dataXML) => {
-        const base64Content = dataXML.contents.split('base64,')[1]
+      .then((data) => {
+        const base64Content = data.contents.split('base64,')[1]
         const decoded = decodeBase64(base64Content)
         const newsArray = parseRSS(decoded)
-        renderNewsList(newsArray, outputDiv)
+
+        if (newsArray.length === 0) setError('Нет постов для этого фида')
+
+        const feed = addFeed(url, url) // временно title = url, можно парсить из RSS
+        addPosts(feed.id, newsArray)
+
+        renderFeeds(feedContainer)
+        renderPosts(postContainer)
+        renderError(outputDiv)
       })
-      .catch((error) => {
-        outputDiv.textContent = `Ошибка: ${error.message}`
-        outputDiv.style.color = 'red'
+      .catch((err) => {
+        setError(`Ошибка: ${err.message}`)
+        renderError(outputDiv)
       })
+      .finally(() => setLoading(false))
 
     inputField.value = ''
     inputField.focus()
   }
 
   button.addEventListener('click', buttonClick)
-  inputField.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter') buttonClick()
+  inputField.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') buttonClick()
   })
 }
 
