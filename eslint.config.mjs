@@ -23,6 +23,18 @@ export default defineConfig([
     },
   },
 
+  // Конфиг для браузерных файлов
+  {
+    files: ['**/*.browser.{js,mjs,cjs}', '**/public/**/*.{js,mjs,cjs}', '**/src/**/*.{js,mjs,cjs}'], // укажите ваши пути
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
+
   // Конфиг для тестов (jest)
   {
     files: ['**/*.test.{js,mjs,cjs}', '**/__tests__/**/*.{js,mjs,cjs}'],
