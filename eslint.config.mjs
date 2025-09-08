@@ -4,13 +4,9 @@ import { defineConfig } from 'eslint/config'
 import stylistic from '@stylistic/eslint-plugin'
 
 export default defineConfig([
-  // Общие правила стилистики
   stylistic.configs.recommended,
-
-  // Базовые правила JS от eslint
   js.configs.recommended,
 
-  // Конфиг для обычных файлов
   {
     files: ['**/*.{js,mjs,cjs}'],
     ignores: ['node_modules/**', 'dist/**'],
@@ -23,9 +19,8 @@ export default defineConfig([
     },
   },
 
-  // Конфиг для браузерных файлов
   {
-    files: ['**/*.browser.{js,mjs,cjs}', '**/public/**/*.{js,mjs,cjs}', '**/src/**/*.{js,mjs,cjs}'], // укажите ваши пути
+    files: ['**/*.browser.{js,mjs,cjs}', '**/public/**/*.{js,mjs,cjs}', '**/src/**/*.{js,mjs,cjs}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -43,12 +38,12 @@ export default defineConfig([
       sourceType: 'module',
       globals: {
         ...globals.node,
-        ...globals.jest, // добавляем jest-глобалы: describe, it, test, expect и т.д.
+        ...globals.jest,
+        ...globals.browser, // <- добавляем браузерные глобалы для тестов
       },
     },
     rules: {
-      // можно включить/усилить правила для тестов отдельно
-      'no-unused-expressions': 'off', // чтобы chai-like/expect.toBeTruthy() не ругался
+      'no-unused-expressions': 'off',
     },
   },
 ])
