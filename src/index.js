@@ -1,6 +1,14 @@
 import parseRSS from './parser.js'
-import { addFeed, addPosts, setError, clearError, setLoading } from './stateHelpers.js'
+import {
+  addFeed,
+  addPosts,
+  setError,
+  clearError,
+  setLoading,
+  isDuplicateFeed,
+} from './stateHelpers.js'
 import { renderFeeds, renderPosts, renderError } from './render.js'
+import isValidUrl from './utils/isValidUrl.js'
 
 const decodeBase64 = (base64Content) => {
   const binary = atob(base64Content)
@@ -19,8 +27,21 @@ const captureInputData = () => {
 
   const buttonClick = () => {
     const url = inputField.value.trim()
+
     if (!url) {
       setError('Пожалуйста, введите URL адрес!')
+      renderError(outputDiv)
+      return
+    }
+
+    if (!isValidUrl(url)) {
+      setError('Некорректный URL')
+      renderError(outputDiv)
+      return
+    }
+
+    if (isDuplicateFeed(url)) {
+      setError('Фид с таким URL уже существует')
       renderError(outputDiv)
       return
     }
@@ -42,14 +63,14 @@ const captureInputData = () => {
         if (newsArray.length === 0) setError('Нет постов для этого фида')
 
         const feed = addFeed(url, url) // временно title = url, можно парсить из RSS
-        addPosts(feed.id, newsArray)
+        if (feed) addPosts(feed.id, newsArray)
 
         renderFeeds(feedContainer)
         renderPosts(postContainer)
         renderError(outputDiv)
       })
-      .catch((err) => {
-        setError(`Ошибка: ${err.message}`)
+      .catch(() => {
+        setError('Не удалось загрузить фид. Проверьте URL и доступность ресурса.')
         renderError(outputDiv)
       })
       .finally(() => setLoading(false))
@@ -65,3 +86,4 @@ const captureInputData = () => {
 }
 
 document.addEventListener('DOMContentLoaded', captureInputData)
+export { captureInputData }
