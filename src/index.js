@@ -1,6 +1,7 @@
 import parseRSS from './parser.js'
 import { addFeed, addPosts, setError, clearError, setLoading } from './stateHelpers.js'
 import { renderFeeds, renderPosts, renderError } from './render.js'
+import isValidUrl from './utils/isValidUrl.js'
 
 const decodeBase64 = (base64Content) => {
   const binary = atob(base64Content)
@@ -19,8 +20,15 @@ const captureInputData = () => {
 
   const buttonClick = () => {
     const url = inputField.value.trim()
+
     if (!url) {
       setError('Пожалуйста, введите URL адрес!')
+      renderError(outputDiv)
+      return
+    }
+
+    if (!isValidUrl(url)) {
+      setError('Некорректный URL')
       renderError(outputDiv)
       return
     }
