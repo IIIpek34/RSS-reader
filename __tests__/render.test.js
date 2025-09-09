@@ -32,7 +32,7 @@ describe('render.js', () => {
   })
 
   describe('renderPosts', () => {
-    test('рендерит список постов', () => {
+    test('рендерит список постов и кликабельные ссылки для модалки', () => {
       state.posts = [
         { id: 1, feedId: 1, title: 'Новость 1', link: 'https://example.com/news1' },
         { id: 2, feedId: 1, title: 'Новость 2', link: 'https://example.com/news2' },
@@ -44,11 +44,11 @@ describe('render.js', () => {
 
       const firstLink = items[0].querySelector('a')
       expect(firstLink.textContent).toBe('Новость 1')
-      expect(new URL(firstLink.href).toString()).toBe('https://example.com/news1')
+      expect(firstLink.getAttribute('href')).toBe('https://example.com/news1')
 
       const secondLink = items[1].querySelector('a')
       expect(secondLink.textContent).toBe('Новость 2')
-      expect(new URL(secondLink.href).toString()).toBe('https://example.com/news2')
+      expect(secondLink.getAttribute('href')).toBe('https://example.com/news2')
     })
   })
 
