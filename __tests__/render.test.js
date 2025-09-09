@@ -44,11 +44,11 @@ describe('render.js', () => {
 
       const firstLink = items[0].querySelector('a')
       expect(firstLink.textContent).toBe('Новость 1')
-      expect(firstLink.getAttribute('href')).toBe('#')
+      expect(firstLink.getAttribute('href')).toBe('https://example.com/news1')
 
       const secondLink = items[1].querySelector('a')
       expect(secondLink.textContent).toBe('Новость 2')
-      expect(secondLink.getAttribute('href')).toBe('#')
+      expect(secondLink.getAttribute('href')).toBe('https://example.com/news2')
     })
   })
 

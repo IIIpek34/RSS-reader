@@ -17,22 +17,22 @@ export const renderPosts = (container) => {
     li.classList.toggle('read', post.read)
 
     const a = document.createElement('a')
-    a.href = '#'
+    a.href = post.link || '#'
     a.textContent = post.title
-    a.addEventListener('click', (e) => {
-      e.preventDefault()
+    a.target = '_blank'
+    a.style.color = post.read ? '#888' : '#000'
+
+    const button = document.createElement('button')
+    button.textContent = 'Просмотр'
+    button.addEventListener('click', () => {
       openModal(post)
       markPostAsRead(post.id)
       li.classList.add('read')
+      a.style.color = '#888'
     })
 
-    const description = document.createElement('p')
-    description.textContent = post.description || ''
-    description.style.fontSize = '0.9em'
-    description.style.color = '#555'
-
     li.appendChild(a)
-    li.appendChild(description)
+    li.appendChild(button)
     container.appendChild(li)
   })
 }
@@ -47,7 +47,6 @@ export const renderError = (container) => {
   }
 }
 
-// открытие модального окна
 const openModal = (post) => {
   const modal = document.getElementById('modal')
   const title = document.getElementById('modal-title')
@@ -56,7 +55,22 @@ const openModal = (post) => {
   const closeBtn = document.getElementById('modal-close')
 
   title.textContent = post.title
-  desc.textContent = post.description || ''
+
+  let contentText = ''
+  if (post.description && post.description.trim() !== '') {
+    contentText = post.description
+  }
+  else if (post.content && post.content.trim() !== '') {
+    contentText = post.content.slice(0, 200) + (post.content.length > 200 ? '...' : '')
+  }
+  else if (post.summary && post.summary.trim() !== '') {
+    contentText = post.summary.slice(0, 200) + (post.summary.length > 200 ? '...' : '')
+  }
+  else {
+    contentText = 'Описание недоступно.'
+  }
+
+  desc.textContent = contentText
   link.href = post.link || '#'
 
   modal.classList.remove('hidden')
