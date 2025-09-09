@@ -62,7 +62,7 @@ const captureInputData = () => {
 
         if (newsArray.length === 0) setError('Нет постов для этого фида')
 
-        const feed = addFeed(url, url) // временно title = url, можно парсить из RSS
+        const feed = addFeed(url, url)
         if (feed) addPosts(feed.id, newsArray)
 
         renderFeeds(feedContainer)
